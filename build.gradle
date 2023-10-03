@@ -1,0 +1,23 @@
+plugins {
+    id 'org.jetbrains.kotlin.jvm' version '1.8.10'
+    id 'org.jetbrains.kotlin.plugin.serialization' version '1.8.10'
+
+    id 'net.mamoe.mirai-console' version '2.15.0'
+}
+
+group = 'xyz.starsoc'
+version = '0.1.0'
+
+repositories {
+    mavenLocal()
+    maven { url "https://maven-central-asia.storage-download.googleapis.com/maven2/" }
+
+    maven { url 'https://maven.aliyun.com/repository/public' }
+    google()
+    mavenCentral()
+}
+dependencies {
+    implementation 'com.google.code.gson:gson:2.10.1'
+    implementation 'com.squareup.okhttp3:okhttp:4.11.0'
+    implementation 'org.slf4j:slf4j-api:2.0.7'
+}
