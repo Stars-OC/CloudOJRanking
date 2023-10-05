@@ -79,7 +79,7 @@ public class UpdateRankerMapper {
                 }
 
                 msg += message.getSuffix();
-                builder.add(bot.getId(),"CloudOJ推送",new PlainText(msg));
+                builder.add(bot.getId(),"CloudOJ推送", new PlainText(msg));
 
             }
 
