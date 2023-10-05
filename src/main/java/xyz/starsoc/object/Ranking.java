@@ -9,7 +9,7 @@ import java.util.List;
 public class Ranking implements Serializable {
   private List<Data> data;
 
-  private Integer count;
+  private int count;
 
   public List<Data> getData() {
     return this.data;
@@ -18,12 +18,11 @@ public class Ranking implements Serializable {
   public void setData(List<Data> data) {
     this.data = data;
   }
-
-  public Integer getCount() {
+  public int getCount() {
     return this.count;
   }
 
-  public void setCount(Integer count) {
+  public void setCount(int count) {
     this.count = count;
   }
 
