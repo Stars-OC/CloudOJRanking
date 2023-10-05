@@ -2,6 +2,8 @@ package xyz.starsoc.ranking.data;
 
 import net.mamoe.mirai.Bot;
 import net.mamoe.mirai.contact.Group;
+import net.mamoe.mirai.message.data.ForwardMessageBuilder;
+import net.mamoe.mirai.message.data.PlainText;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xyz.starsoc.file.Config;
@@ -43,21 +45,22 @@ public class UpdateRankerMapper {
 
         Bot bot = Bot.getInstanceOrNull(config.getBot());
 
-        for(UpdateRanker updateRanker : updateRankers){
+        for (String groupId : config.getEnableGroup()){
 
-            String userId = updateRanker.getUserId();
-            Ranker ranker = rankerMap.get(userId);
-            String name = ranker.getName() + "(" + userId + ")";
+            Group group = bot.getGroupOrFail(Long.parseLong(groupId));
+            ForwardMessageBuilder builder = new ForwardMessageBuilder(group);
 
-            for (String groupId : config.getEnableGroup()){
+            for(UpdateRanker updateRanker : updateRankers){
 
-                Group group = bot.getGroupOrFail(Long.parseLong(groupId));
                 String msg = "";
-
+                String userId = updateRanker.getUserId();
+                Ranker ranker = rankerMap.get(userId);
+                String name = ranker.getName() + "(" + userId + ")";
                 int rank = updateRanker.getRank();
                 if(rank > 0){
                     Integer newRank = ranker.getRank();
-                    msg += message.getRankUp().replace("%name%",name)
+                    msg += message.getRankUp()
+                            .replace("%name%",name)
                             .replace("%rankUp%", rank + "")
                             .replace("%oldRank%",(newRank + rank) + "")
                             .replace("%newRank%",newRank + "");
@@ -65,7 +68,8 @@ public class UpdateRankerMapper {
 
                 double score = updateRanker.getScore();
                 if(score > 0){
-                    msg += message.getScoreUp().replace("%name%",name)
+                    msg += message.getScoreUp()
+                            .replace("%name%",name)
                             .replace("%scoreUp%",score + "");
                 }
 
@@ -75,8 +79,12 @@ public class UpdateRankerMapper {
                 }
 
                 msg += message.getSuffix();
-                group.sendMessage(msg);
+                builder.add(bot.getId(),"CloudOJ推送",new PlainText(msg));
+
             }
+
+            group.sendMessage(builder.build());
+
         }
 
         updateRankers.clear();

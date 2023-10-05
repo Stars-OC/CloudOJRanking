@@ -28,7 +28,7 @@ public class RankingThread {
                 return;
             }
 
-            logger.info("获取json成功，正在发送中...");
+            logger.info("获取数据成功");
 //            Ranker ranker = new Ranker();
 //            ranker.setRank(123);
 //            ranker.setUserId("test");

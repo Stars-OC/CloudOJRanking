@@ -132,7 +132,7 @@ public class RankingParse {
         List<Ranking.Data> list = ranking.getData();
         int size = list.size();
         for(int i = size - 1;i >= 0;i--){
-            //从后往前降低资源消耗
+
             Ranker ranker = list.get(i);
 
             if(data.getCount() == 0){
