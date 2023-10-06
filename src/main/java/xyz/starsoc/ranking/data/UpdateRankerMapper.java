@@ -80,7 +80,7 @@ public class UpdateRankerMapper {
                     msg += message.getPassedUp()
                             .replace("%name%",name)
                             .replace("%passedUp%",passed + "")
-                            .replace("%pass%",ranker.getPassed() + "");
+                            .replace("%passed%",ranker.getPassed() + "");
                 }
 
                 String text = updateRanker.getText();

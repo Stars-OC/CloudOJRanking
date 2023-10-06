@@ -114,17 +114,17 @@ public class RankingParse {
 
         int isChanging = 0;
         //用来判断是否能够加入mapper中
-        if(score > config.getScoreLimit()){
+        if(score >= config.getScoreLimit()){
             updateRanker.setScore(score);
             ++isChanging;
         }
 
-        if(rank > config.getRankLimit()){
+        if(rank >= config.getRankLimit()){
             updateRanker.setRank(rank);
             ++isChanging;
         }
 
-        if(passed > config.getPassedLimit()){
+        if(passed >= config.getPassedLimit()){
             updateRanker.setPassed(passed);
             ++isChanging;
         }
