@@ -38,6 +38,7 @@ public class UpdateRankerMapper {
     }
 
     public void sendMessage(){
+        //TODO 用js css 渲染图片发出
         if(updateRankers.isEmpty()){
             logger.info("没有人在卷QAQ");
             return;
@@ -56,9 +57,10 @@ public class UpdateRankerMapper {
                 String userId = updateRanker.getUserId();
                 Ranker ranker = rankerMap.get(userId);
                 String name = ranker.getName() + "(" + userId + ")";
+
                 int rank = updateRanker.getRank();
                 if(rank > 0){
-                    Integer newRank = ranker.getRank();
+                    int newRank = ranker.getRank();
                     msg += message.getRankUp()
                             .replace("%name%",name)
                             .replace("%rankUp%", rank + "")
@@ -71,6 +73,14 @@ public class UpdateRankerMapper {
                     msg += message.getScoreUp()
                             .replace("%name%",name)
                             .replace("%scoreUp%",score + "");
+                }
+
+                int passed = updateRanker.getPassed();
+                if(passed > 0){
+                    msg += message.getPassedUp()
+                            .replace("%name%",name)
+                            .replace("%passedUp%",passed + "")
+                            .replace("%pass%",ranker.getPassed() + "");
                 }
 
                 String text = updateRanker.getText();

@@ -96,16 +96,18 @@ public class RankingParse {
         int oldRankerRank = oldRanker.getRank();
         int rankerRank = ranker.getRank();
         int rank =  oldRankerRank - rankerRank;
+        int passed = ranker.getPassed() - oldRanker.getPassed();
 
         //更新数据
         rankerMap.put(userId,ranker);
 
         //将数据进行判断，然后加入相对应的队列中
         UpdateRanker updateRanker = new UpdateRanker(userId);
-        if((oldRankerRank <= config.getMonitorLimit() || rankerRank <= config.getMonitorLimit()) && (rank > 0 || score > 0)){
+        if((oldRankerRank <= config.getMonitorLimit() || rankerRank <= config.getMonitorLimit()) && (rank > 0 || score > 0 || passed > 0)){
             //如果在检测范围内将实时报告其状态  后面看情况是否进行退步的变更
             updateRanker.setRank(rank);
             updateRanker.setScore(score);
+            updateRanker.setPassed(passed);
             mapper.add(updateRanker);
             return;
         }
@@ -119,6 +121,11 @@ public class RankingParse {
 
         if(rank > config.getRankLimit()){
             updateRanker.setRank(rank);
+            ++isChanging;
+        }
+
+        if(passed > config.getPassedLimit()){
+            updateRanker.setPassed(passed);
             ++isChanging;
         }
 

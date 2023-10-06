@@ -13,6 +13,7 @@ object Config : AutoSavePluginConfig("config") {
     var monitorLimit by value(25)
     var scoreLimit by value(50)
     var rankLimit by value(25)
+    var passedLimit by value(5)
     val url by value("https://cloudoj.204.group/")
     val rankingApi by value("api/core/ranking?page=%d&limit=%d")
 }
