@@ -8,7 +8,7 @@ object Config : AutoSavePluginConfig("config") {
     val bot : Long by value(2159165283 )
     @ValueDescription("最高权限")
     val master by value(1027715998)
-    val enableGroup by value(mutableSetOf("607402931"))
+    val enableGroup : Set<Long> by value(mutableSetOf())
     val checkTime by value(15)
     val rankingUpTime by value("07:30")
     var monitorLimit by value(25)

@@ -26,7 +26,8 @@ public class UpdateRankerMapper {
     public static final ArrayList<UpdateRanker> updateRankers = new ArrayList<>();
     public static final HashMap<String,UpdateRanker> rankingUp = new HashMap<>();
     private static final ArrayList<Group> groupList = new ArrayList<>();
-    private static ForwardMessage rankingUpMessage = null;
+    public static ForwardMessage rankingUpMessage = null;
+    public static ForwardMessage rankingUpMessageNow = null;
     private static Logger logger = LoggerFactory.getLogger("RankingThread");
 
 
@@ -56,9 +57,22 @@ public class UpdateRankerMapper {
         }
     }
 
+    public void getRankingUpNow(Group group){
+
+        ForwardMessageBuilder builder = new ForwardMessageBuilder(group);
+        Date dateTime = new Date();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        String today = simpleDateFormat.format(dateTime);
+
+        builder.add(config.getBot(),"CloudOJ日榜",new PlainText(message.getPrefixRankingUp().replace("%date%",today)));
+        buildRankingUp(builder);
+        rankingUpMessageNow = builder.build();
+
+    }
+
     public void sendRankingUp(){
         if(rankingUp.isEmpty()){
-            logger.info("昨天没有人上榜");
+            logger.info("没有人上榜");
             return;
         }
         //TODO js css 渲染图片
@@ -66,35 +80,55 @@ public class UpdateRankerMapper {
         for(Group group : groupList){
 
             ForwardMessageBuilder builder = new ForwardMessageBuilder(group);
+
             Date dateTime = new Date();
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-            String today = simpleDateFormat.format(dateTime);
             String yesterday = simpleDateFormat.format(dateTime.getTime() - 86400);
             builder.add(config.getBot(),"CloudOJ日榜",new PlainText(message.getPrefixRankingUp().replace("%date%",yesterday)));
+            buildRankingUp(builder);
 
-            for(UpdateRanker updateRanker : rankingUp.values()){
-                //TODO 更新排序
-                String userId = updateRanker.getUserId();
-                Ranker ranker = rankerMap.get(userId);
-                String name = ranker.getName() + "(" + userId + ")";
-
-                int rank = updateRanker.getRank();
-                int newRank = ranker.getRank();
-                double score = updateRanker.getScore();
-                int passed = updateRanker.getPassed();
-                //TODO 这个可能会出现BUG，后面试试将其进行分开
-                builder.add(config.getBot(),"CloudOJ日榜",new PlainText(message.getRankingUp()
-                        .replace("%name%",name)
-                        .replace("%rankUp%", rank + "")
-                        .replace("%oldRank%",(newRank + rank) + "")
-                        .replace("%newRank%",newRank + "")
-                        .replace("%scoreUp%",score + "")
-                        .replace("%passedUp%",passed + "")));
-
-            }
-
-            builder.add(config.getBot(),"CloudOJ日榜",new PlainText(message.getSuffixRankingUp().replace("%date%",today)));
             rankingUpMessage = builder.build();
+
+        }
+
+        rankingUp.clear();
+
+    }
+
+    public void buildRankingUp(ForwardMessageBuilder builder){
+        Date dateTime = new Date();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        String today = simpleDateFormat.format(dateTime);
+
+        rankingUpBuilder(builder);
+
+        builder.add(config.getBot(),"CloudOJ日榜",new PlainText(message.getSuffixRankingUp().replace("%date%",today)));
+    }
+
+    private void rankingUpBuilder(ForwardMessageBuilder builder){
+
+        int rankUp = 0;
+        for(UpdateRanker updateRanker : rankingUp.values()){
+            //TODO 更新排序
+            ++rankUp;
+            String userId = updateRanker.getUserId();
+            Ranker ranker = rankerMap.get(userId);
+            String name = ranker.getName() + "(" + userId + ")";
+
+            int rank = updateRanker.getRank();
+            int newRank = ranker.getRank();
+            double score = updateRanker.getScore();
+            int passed = updateRanker.getPassed();
+            //TODO 这个可能会出现BUG，后面试试将其进行分开
+            builder.add(config.getBot(),"CloudOJ日榜",new PlainText(message.getRankingUp()
+                    .replace("%name%",name)
+                    .replace("%rankUp%", rank + "")
+                    .replace("%oldRank%",(newRank + rank) + "")
+                    .replace("%newRank%",newRank + "")
+                    .replace("%scoreUp%",score + "")
+                    .replace("%passedUp%",passed + "")
+                    .replace("%rank%",rankUp + "")));
+
         }
     }
 
@@ -105,9 +139,9 @@ public class UpdateRankerMapper {
         }
 
         Bot bot = Bot.getInstanceOrNull(config.getBot());
-        for (String groupId : config.getEnableGroup()){
+        for (Long groupId : config.getEnableGroup()){
 
-            Group group = bot.getGroupOrFail(Long.parseLong(groupId));
+            Group group = bot.getGroupOrFail(groupId);
             //添加该进行转发的群聊
             groupList.add(group);
 
@@ -163,16 +197,16 @@ public class UpdateRankerMapper {
 
                 String text = updateRanker.getText();
                 if (text != null){
-                    msg += text + "\n";
+                    msg += text.replace("%name%",name) + "\n";
                 }
 
                 msg += message.getSuffix();
                 builder.add(config.getBot(),"CloudOJ推送", new PlainText(msg));
             }
-
             group.sendMessage(builder.build());
-
         }
+
+        updateRankers.clear();
 
     }
 }
