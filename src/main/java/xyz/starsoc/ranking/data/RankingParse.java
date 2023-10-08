@@ -6,6 +6,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 import xyz.starsoc.file.Config;
 import xyz.starsoc.file.Data;
+import xyz.starsoc.file.Message;
 import xyz.starsoc.object.Ranker;
 import xyz.starsoc.object.Ranking;
 import xyz.starsoc.object.UpdateRanker;
@@ -102,12 +103,22 @@ public class RankingParse {
         rankerMap.put(userId,ranker);
 
         //将数据进行判断，然后加入相对应的队列中
-        UpdateRanker updateRanker = new UpdateRanker(userId);
-        if((oldRankerRank <= config.getMonitorLimit() || rankerRank <= config.getMonitorLimit()) && (rank > 0 || score > 0 || passed > 0)){
+        UpdateRanker updateRanker = null;
+        if(rankerRank <= config.getMonitorLimit() || score >= config.getScoreLimit() || rank >= config.getRankLimit() || passed >= config.getPassedLimit()){
+            //用来减少对象的创建，减轻GC的负担
+            updateRanker = new UpdateRanker(userId);
+        }else {
+            return;
+        }
+
+        if(rankerRank <= config.getMonitorLimit() && (rank > 0 || score > 0 || passed > 0)){
             //如果在检测范围内将实时报告其状态  后面看情况是否进行退步的变更
             updateRanker.setRank(rank);
             updateRanker.setScore(score);
             updateRanker.setPassed(passed);
+            if(oldRankerRank >= config.getMonitorLimit()){
+                updateRanker.setText(Message.INSTANCE.getBreakMonitorLimit());
+            }
             mapper.add(updateRanker);
             return;
         }

@@ -13,7 +13,7 @@ public final class CloudOJRanking extends JavaPlugin{
 public static final CloudOJRanking INSTANCE=new CloudOJRanking();
 
     private CloudOJRanking(){
-        super(new JvmPluginDescriptionBuilder("xyz.starsoc.cloudojranking","0.1.1")
+        super(new JvmPluginDescriptionBuilder("xyz.starsoc.cloudojranking","0.2.0")
                 .name("CloudOJRanking")
                 .author("Clusters_stars")
                 .build());

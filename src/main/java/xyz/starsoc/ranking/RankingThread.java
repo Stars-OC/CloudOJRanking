@@ -8,6 +8,8 @@ import xyz.starsoc.object.Ranker;
 import xyz.starsoc.ranking.data.RankingParse;
 import xyz.starsoc.ranking.data.UpdateRankerMapper;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -18,29 +20,42 @@ public class RankingThread {
     private static final RankingParse parse = RankingParse.INSTANCE;
     private static final UpdateRankerMapper mapper = UpdateRankerMapper.INSTANCE;
     private static Logger logger = LoggerFactory.getLogger("RankingThread");
+    private static int times = config.getCheckTime()-1;
+    private static boolean init = true;
     public static void run() {
 //        parse.checkRanking();
 //        if(true){
 //            return;
 //        }
+
         Runnable runnable = () -> {
-            if (!parse.checkRanking()){
-                return;
+
+            if (init){
+                init = false;
+                mapper.init();
             }
 
-            logger.info("获取数据成功");
-//            Ranker ranker = new Ranker();
-//            ranker.setRank(123);
-//            ranker.setUserId("test");
-//
-//            Map<String, Ranker> persons = Data.INSTANCE.getPersons();
-//            System.out.println(persons.isEmpty());
-//            persons.put("test",ranker);
-//            System.out.println(persons.size());
-//            System.out.println(persons.get("test").getUserId());
-            mapper.sendMessage();
+            //用来更新日榜
+            Date dateTime = new Date();
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm");
+            String time = simpleDateFormat.format(dateTime);
+            if (time.equals(config.getRankingUpTime())){
+                mapper.sendRankingUp();
+            }
+
+            if(++times == config.getCheckTime()){
+                //按照规定进行发送相关消息
+                times = 0;
+                if (!parse.checkRanking()){
+                    return;
+                }
+
+                logger.info("获取数据成功");
+                mapper.sendUpdateMessage();
+            }
+
         };
         ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
-        service.scheduleAtFixedRate(runnable, 20, config.getTime(), TimeUnit.SECONDS);
+        service.scheduleAtFixedRate(runnable, 20, 60, TimeUnit.SECONDS);
     }
 }
