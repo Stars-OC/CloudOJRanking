@@ -3,14 +3,11 @@ package xyz.starsoc.ranking;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xyz.starsoc.file.Config;
-import xyz.starsoc.file.Data;
-import xyz.starsoc.object.Ranker;
 import xyz.starsoc.ranking.data.RankingParse;
 import xyz.starsoc.ranking.data.UpdateRankerMapper;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -41,6 +38,11 @@ public class RankingThread {
             String time = simpleDateFormat.format(dateTime);
             if (time.equals(config.getRankingUpTime())){
                 mapper.sendRankingUp();
+            }
+
+            //当日排行榜推送
+            if (config.getRankingUpTimeNow().contains(time)){
+                mapper.sendRankingUpNow();
             }
 
             if(++times == config.getCheckTime()){

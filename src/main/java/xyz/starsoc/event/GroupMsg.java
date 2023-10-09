@@ -40,13 +40,16 @@ public class GroupMsg extends SimpleListenerHost {
         String[] command = message.split(" ");
         switch (command[1]){
             case "排行榜":
-                mapper.getRankingUpNow(group);
-                group.sendMessage(UpdateRankerMapper.rankingUpMessageNow);
+                if(mapper.getRankingUpNow(group)){
+                    group.sendMessage(UpdateRankerMapper.rankingUpMessageNow);
+                }else {
+                    group.sendMessage("昨天暂未有人上榜，请过会再来看看吧...");
+                }
                 return;
             case "昨日排行榜":
                 ForwardMessage ranking = UpdateRankerMapper.rankingUpMessage;
                 if (ranking == null){
-                    group.sendMessage("昨天暂未有人上榜，请明天再来看看吧");
+                    group.sendMessage("昨天暂未有人上榜，请明天再来看看吧...");
                     return;
                 }
                 group.sendMessage(ranking);

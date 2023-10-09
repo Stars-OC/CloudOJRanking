@@ -1,9 +1,6 @@
 package xyz.starsoc.object;
 
 import java.io.Serializable;
-import java.lang.Double;
-import java.lang.Integer;
-import java.lang.String;
 import java.util.List;
 
 public class Ranking implements Serializable {

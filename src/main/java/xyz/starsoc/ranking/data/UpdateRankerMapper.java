@@ -57,7 +57,11 @@ public class UpdateRankerMapper {
         }
     }
 
-    public void getRankingUpNow(Group group){
+    public boolean getRankingUpNow(Group group){
+
+        if(rankingUp.isEmpty()){
+            return false;
+        }
 
         ForwardMessageBuilder builder = new ForwardMessageBuilder(group);
         Date dateTime = new Date();
@@ -68,6 +72,22 @@ public class UpdateRankerMapper {
         buildRankingUp(builder);
         rankingUpMessageNow = builder.build();
 
+        return true;
+    }
+
+    public void sendRankingUpNow(){
+        if(rankingUp.isEmpty()){
+            logger.info("没有人上榜");
+            return;
+        }
+
+        for(Group group : groupList){
+
+            if(getRankingUpNow(group)){
+                group.sendMessage(rankingUpMessageNow);
+            }
+
+        }
     }
 
     public void sendRankingUp(){
@@ -87,7 +107,10 @@ public class UpdateRankerMapper {
             builder.add(config.getBot(),"CloudOJ日榜",new PlainText(message.getPrefixRankingUp().replace("%date%",yesterday)));
             buildRankingUp(builder);
 
-            rankingUpMessage = builder.build();
+            ForwardMessage build = builder.build();
+            group.sendMessage(build);
+            //TODO 后面测试不同群聊这个的存储方式
+            rankingUpMessage = build;
 
         }
 
