@@ -14,5 +14,9 @@ object Message : AutoSavePluginConfig("message") {
     val rankingUp by value("NO.%rank%\n%name% 的详细数据：\nTA 提升了 %rankUp% 名 (%oldRank% -> %newRank%↑)\n获得了%scoreUp%分  AC了 %passedUp% 题")
     val suffixRankingUp by value("数据更新于%date% \n" + suffix)
 
+    val help by value("=====CloudOJRanking 帮助=====" +
+            "\n!(！)ranking 排行榜 查看今日冲分榜" +
+            "\n!(！)ranking 昨日排行榜 查看昨日冲分榜")
+
 
 }

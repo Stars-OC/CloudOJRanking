@@ -8,6 +8,7 @@ import net.mamoe.mirai.message.data.ForwardMessage;
 import net.mamoe.mirai.message.data.PlainText;
 import org.jetbrains.annotations.NotNull;
 import xyz.starsoc.file.Config;
+import xyz.starsoc.file.Message;
 import xyz.starsoc.ranking.data.UpdateRankerMapper;
 
 import java.util.Set;
@@ -15,6 +16,7 @@ import java.util.Set;
 public class GroupMsg extends SimpleListenerHost {
 
     private final Config config = Config.INSTANCE;
+    private final Message message = Message.INSTANCE;
     private final Set<Long> groupList = config.getEnableGroup();
 
     private UpdateRankerMapper mapper = UpdateRankerMapper.INSTANCE;
@@ -28,22 +30,20 @@ public class GroupMsg extends SimpleListenerHost {
             return;
         }
 
-        String message = event.getMessage().get(PlainText.Key).contentToString();
-        if (!(message.startsWith("!ranking") || message.startsWith("！ranking"))){
+        String plain = event.getMessage().get(PlainText.Key).contentToString();
+        if (!(plain.startsWith("!ranking") || plain.startsWith("！ranking"))){
             return;
         }
 
-        String help = "=====CloudOJRanking 帮助=====" +
-                "\n!(！)ranking 排行榜 查看今日冲分榜" +
-                "\n!(！)ranking 昨日排行榜 查看昨日冲分榜";
+        String help = message.getHelp();
 
-        String[] command = message.split(" ");
+        String[] command = plain.split(" ");
         switch (command[1]){
             case "排行榜":
                 if(mapper.getRankingUpNow(group)){
                     group.sendMessage(UpdateRankerMapper.rankingUpMessageNow);
                 }else {
-                    group.sendMessage("昨天暂未有人上榜，请过会再来看看吧...");
+                    group.sendMessage("今天暂未有人上榜，请过会再来看看吧...");
                 }
                 return;
             case "昨日排行榜":

@@ -76,10 +76,6 @@ public class UpdateRankerMapper {
     }
 
     public void sendRankingUpNow(){
-        if(rankingUp.isEmpty()){
-            logger.info("没有人上榜");
-            return;
-        }
 
         for(Group group : groupList){
 
@@ -131,6 +127,12 @@ public class UpdateRankerMapper {
     private void rankingUpBuilder(ForwardMessageBuilder builder){
 
         int rankUp = 0;
+
+        if(rankingUp.isEmpty()){
+            builder.add(config.getBot(),"CloudOJ日榜",new PlainText("暂未有人上榜..."));
+            return;
+        }
+
         for(UpdateRanker updateRanker : rankingUp.values()){
             //TODO 更新排序
             ++rankUp;
@@ -192,9 +194,10 @@ public class UpdateRankerMapper {
                 String userId = updateRanker.getUserId();
                 Ranker ranker = rankerMap.get(userId);
                 String name = ranker.getName() + "(" + userId + ")";
+                boolean isMonitored = ranker.getRank() <= config.getMonitorLimit();
 
                 int rank = updateRanker.getRank();
-                if(rank > 0){
+                if(rank > config.getRankLimit() || isMonitored){
                     int newRank = ranker.getRank();
                     msg += message.getRankUp()
                             .replace("%name%",name)
@@ -204,14 +207,14 @@ public class UpdateRankerMapper {
                 }
 
                 double score = updateRanker.getScore();
-                if(score > 0){
+                if(score > config.getScoreLimit() || isMonitored){
                     msg += message.getScoreUp()
                             .replace("%name%",name)
                             .replace("%scoreUp%",score + "");
                 }
 
                 int passed = updateRanker.getPassed();
-                if(passed > 0){
+                if(passed > config.getPassedLimit() || isMonitored){
                     msg += message.getPassedUp()
                             .replace("%name%",name)
                             .replace("%passedUp%",passed + "")

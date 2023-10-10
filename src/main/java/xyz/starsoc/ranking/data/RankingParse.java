@@ -110,7 +110,7 @@ public class RankingParse {
             return;
         }
 
-        if(rankerRank <= config.getMonitorLimit() && (rank > 0 || score > 0 || passed > 0)){
+        if((rankerRank <= config.getMonitorLimit() && (rank > 0 || score > 0 || passed > 0))){
             //如果在检测范围内将实时报告其状态  后面看情况是否进行退步的变更
             updateRanker.setRank(rank);
             updateRanker.setScore(score);
@@ -122,24 +122,11 @@ public class RankingParse {
             return;
         }
 
-        int isChanging = 0;
-        //用来判断是否能够加入mapper中
-        if(score >= config.getScoreLimit()){
-            updateRanker.setScore(score);
-            ++isChanging;
-        }
-
-        if(rank >= config.getRankLimit()){
+        //用来判断是否能够加入mapper中 到时候进行合并
+        if(score >= config.getScoreLimit() || rank >= config.getRankLimit() || passed >= config.getPassedLimit()){
             updateRanker.setRank(rank);
-            ++isChanging;
-        }
-
-        if(passed >= config.getPassedLimit()){
+            updateRanker.setScore(score);
             updateRanker.setPassed(passed);
-            ++isChanging;
-        }
-
-        if(isChanging > 0){
             mapper.add(updateRanker);
         }
     }
