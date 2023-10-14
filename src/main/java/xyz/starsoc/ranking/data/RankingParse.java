@@ -78,7 +78,7 @@ public class RankingParse {
     public void getUpdateRanker(Ranker ranker){
         //TODO 后面使用redis来缓存
         boolean isNew = false;
-        String userId = ranker.getUserId();
+        String userId = ranker.getUsername();
         if(!rankerMap.containsKey(userId)){
             //用来存储没有的数据
             rankerMap.put(userId,ranker);
@@ -141,7 +141,7 @@ public class RankingParse {
 
             if(data.getCount() == 0){
                 //初始化
-                rankerMap.put(ranker.getUserId(),ranker);
+                rankerMap.put(ranker.getUsername(),ranker);
                 continue;
             }
 

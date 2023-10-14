@@ -144,7 +144,7 @@ public class UpdateRankerMapper {
             UpdateRanker updateRanker = values[i];
             String userId = updateRanker.getUserId();
             Ranker ranker = rankerMap.get(userId);
-            String name = ranker.getName() + "(" + userId + ")";
+            String name = ranker.getNickname() + "(" + userId + ")";
 
             int rank = updateRanker.getRank();
             int newRank = ranker.getRank();
@@ -206,7 +206,7 @@ public class UpdateRankerMapper {
                 String msg = "";
                 String userId = updateRanker.getUserId();
                 Ranker ranker = rankerMap.get(userId);
-                String name = ranker.getName() + "(" + userId + ")";
+                String name = ranker.getNickname() + "(" + userId + ")";
                 boolean isMonitored = ranker.getRank() <= config.getMonitorLimit();
 
                 int rank = updateRanker.getRank();
