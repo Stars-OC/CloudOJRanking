@@ -129,14 +129,20 @@ public class UpdateRankerMapper {
             return;
         }
 
+
+        double rankPoint = config.getRankPoint();
+        double passedUpPoint = config.getPassedUpPoint();
+        double scoreUpPoint = config.getScoreUpPoint();
+        double rankUpPoint = config.getRankUpPoint();
+
         //进行排序
         Collection<UpdateRanker> rankers = rankingUp.values();
-        UpdateRanker[] values = rankers.toArray(new UpdateRanker[rankers.size()]);
+        UpdateRanker[] values = rankers.toArray(new UpdateRanker[0]);
         Arrays.sort(values, (o1, o2) -> {
             //排序规则 score*0.8 + passed*5 + rankUp*0.5 - rank
             int rankerO1 = rankerMap.get(o1.getUserId()).getRank();
             int rankerO2 = rankerMap.get(o2.getUserId()).getRank();
-            return -((int) ((o1.getScore() - o2.getScore())*0.8 + (o1.getPassed() - o2.getRank())*5 + (o1.getRank() - o2.getRank())*0.5 - (rankerO1 - rankerO2)));
+            return -((int) ((o1.getScore() - o2.getScore())*scoreUpPoint + (o1.getPassed() - o2.getPassed())*passedUpPoint + (o1.getRank() - o2.getRank())*rankUpPoint - (rankerO1 - rankerO2)*rankPoint));
         });
 
         for(int i = 0;i < values.length;i++){
@@ -151,7 +157,9 @@ public class UpdateRankerMapper {
             double score = updateRanker.getScore();
             int passed = updateRanker.getPassed();
             int NO = i+1;
-            //TODO 这个可能会出现BUG，后面试试将其进行分开
+
+//            int point = (int)(score * scoreUpPoint + r);
+
             builder.add(config.getBot(),"CloudOJ日榜",new PlainText(message.getRankingUp()
                     .replace("%name%",name)
                     .replace("%rankUp%", rank + "")
@@ -163,10 +171,14 @@ public class UpdateRankerMapper {
 
         }
 
-        builder.add(config.getBot(),"CloudOJ日榜",new PlainText("排序规则如下：" +
-                "\nscore*0.8 + passed*5 + rankUp*0.5 - rank" +
-                "\n也就是你获取的分数*0.8 + 你通过的题目*5 + 你排行上升的高度*0.5 - 你所在的排名" +
-                "\n若有好的建议，可以反馈给管理员"));
+        builder.add(config.getBot(),"CloudOJ日榜",new PlainText(("排序规则如下：" +
+//                "\nscore*%scoreUpPoint% + passed*%passedUpPoint% + rankUp*%rankUpPoint% - rank*%rankPoint%" +
+                "\n也就是你获取的分数*%scoreUpPoint% + 你通过的题目*%passedUpPoint% + 你排行上升的高度*%rankUpPoint% - 你所在的排名*%rankPoint%" +
+                "\n若有好的建议，可以反馈给管理员")
+                .replace("%scoreUpPoint%",scoreUpPoint + "")
+                .replace("%passedUpPoint%",passedUpPoint + "")
+                .replace("%rankUpPoint%",rankUpPoint + "")
+                .replace("%rankPoint%",rankPoint + "")));
 
     }
 
@@ -239,9 +251,10 @@ public class UpdateRankerMapper {
                     msg += text.replace("%name%",name) + "\n";
                 }
 
-                msg += message.getSuffix();
                 builder.add(config.getBot(),"CloudOJ推送", new PlainText(msg));
             }
+
+            builder.add(config.getBot(),"CloudOJ推送", new PlainText(message.getSuffix()));
             group.sendMessage(builder.build());
         }
 
