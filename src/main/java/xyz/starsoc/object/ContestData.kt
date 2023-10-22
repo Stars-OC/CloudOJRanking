@@ -13,5 +13,5 @@ open class ContestData {
     var endAt: Int? = null
     var startAt: Int? = null
     var createAt: Int? = null
-    val inviteKey: String? = null
+//    val inviteKey: String? = null
 }

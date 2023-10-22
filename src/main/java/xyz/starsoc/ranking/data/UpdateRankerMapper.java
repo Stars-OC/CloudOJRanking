@@ -16,6 +16,10 @@ import xyz.starsoc.object.UpdateRanker;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+/**
+ * @author Clusters_stars
+ * 用来加载竞赛信息
+ */
 public class UpdateRankerMapper {
 
     public static final UpdateRankerMapper INSTANCE = new UpdateRankerMapper();
@@ -25,7 +29,7 @@ public class UpdateRankerMapper {
     private static final ArrayList<Group> groupList = new ArrayList<>();
     public static ForwardMessage rankingUpMessage = null;
     public static ForwardMessage rankingUpMessageNow = null;
-    private static Logger logger = LoggerFactory.getLogger("RankingThread");
+    private static final Logger logger = LoggerFactory.getLogger("RankingThread");
 
 
     private static final Config config = Config.INSTANCE;

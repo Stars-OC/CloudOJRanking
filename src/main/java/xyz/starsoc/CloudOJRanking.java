@@ -7,6 +7,7 @@ import net.mamoe.mirai.event.GlobalEventChannel;
 import xyz.starsoc.event.Command;
 import xyz.starsoc.event.GroupMsg;
 import xyz.starsoc.file.Config;
+import xyz.starsoc.file.Contests;
 import xyz.starsoc.file.Data;
 import xyz.starsoc.file.Message;
 import xyz.starsoc.ranking.RankingThread;
@@ -35,5 +36,6 @@ public static final CloudOJRanking INSTANCE=new CloudOJRanking();
         reloadPluginConfig(Config.INSTANCE);
         reloadPluginConfig(Message.INSTANCE);
         reloadPluginData(Data.INSTANCE);
+        reloadPluginData(Contests.INSTANCE);
     }
 }

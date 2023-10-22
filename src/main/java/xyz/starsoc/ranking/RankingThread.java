@@ -20,10 +20,6 @@ public class RankingThread {
     private static int times = config.getCheckTime()-1;
     private static boolean init = true;
     public static void run() {
-//        parse.checkRanking();
-//        if(true){
-//            return;
-//        }
 
         Runnable runnable = () -> {
 
@@ -54,6 +50,8 @@ public class RankingThread {
 
                 logger.info("获取数据成功");
                 mapper.sendUpdateMessage();
+            }else if (times == config.getCheckContestTime()){
+                System.out.println();
             }
 
         };
