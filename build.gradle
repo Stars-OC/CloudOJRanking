@@ -6,7 +6,7 @@ plugins {
 }
 
 group = 'xyz.starsoc'
-version = '0.3.0'
+version = '0.4.0'
 
 repositories {
     mavenLocal()
@@ -20,4 +20,6 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.10.1'
     implementation 'com.squareup.okhttp3:okhttp:4.11.0'
     implementation 'org.slf4j:slf4j-api:2.0.7'
+    // https://mavenlibs.com/maven/dependency/redis.clients/jedis
+    implementation 'redis.clients:jedis:4.4.3'
 }

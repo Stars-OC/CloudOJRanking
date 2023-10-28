@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 public class RankingParse {
+
     public static final RankingParse INSTANCE = new RankingParse();
 
     private static final ArrayList<UpdateRanker> mapper = UpdateRankerMapper.updateRankers;

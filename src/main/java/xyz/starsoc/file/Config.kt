@@ -18,6 +18,10 @@ object Config : AutoSavePluginConfig("config") {
     val rankingUpTimeNow by value(mutableSetOf("09:50","13:20","18:10"))
     @ValueDescription("多久检测一次竞赛信息 单位min")
     val checkContestTime by value(60)
+    @ValueDescription("比赛开始前多长时间进行提醒 单位min")
+    val monitorContestTime by value(60)
+    @ValueDescription("多久检测一次竞赛排行信息 单位min")
+    val checkContestRankTime by value(5)
     @ValueDescription("检测前多少名的实时动向")
     var monitorLimit by value(25)
     @ValueDescription("超过多少分开始推送")
@@ -40,4 +44,6 @@ object Config : AutoSavePluginConfig("config") {
     val rankingApi by value("api/core/ranking?page=%d&limit=%d")
     @ValueDescription("这是竞赛api地址")
     val contentsApi by value("api/core/contest?page=%d&limit=%d")
+    @ValueDescription("这是竞赛排行榜api地址")
+    val contentRankApi by value("api/core/ranking/contest/%d?page=%d&limit=%d")
 }

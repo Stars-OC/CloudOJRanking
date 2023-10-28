@@ -26,7 +26,7 @@ public class UpdateRankerMapper {
 
     public static final ArrayList<UpdateRanker> updateRankers = new ArrayList<>();
     public static final HashMap<String,UpdateRanker> rankingUp = new HashMap<>();
-    private static final ArrayList<Group> groupList = new ArrayList<>();
+    public static final ArrayList<Group> groupList = new ArrayList<>();
     public static ForwardMessage rankingUpMessage = null;
     public static ForwardMessage rankingUpMessageNow = null;
     private static final Logger logger = LoggerFactory.getLogger("RankingThread");

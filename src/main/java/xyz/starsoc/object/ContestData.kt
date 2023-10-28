@@ -10,8 +10,8 @@ open class ContestData {
     var ended: Boolean? = null
     var started: Boolean? = null
     var contestName: String? = null
-    var endAt: Int? = null
-    var startAt: Int? = null
-    var createAt: Int? = null
+    var endAt: Long? = null
+    var startAt: Long? = null
+    var createAt: Long? = null
 //    val inviteKey: String? = null
 }
