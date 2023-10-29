@@ -10,14 +10,13 @@ import xyz.starsoc.file.ContestsDataFile;
 import xyz.starsoc.file.Message;
 import xyz.starsoc.object.ContestData;
 import xyz.starsoc.object.Contests;
-import xyz.starsoc.ranking.data.RankingParse;
 import xyz.starsoc.ranking.data.UpdateRankerMapper;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 /**
@@ -27,12 +26,12 @@ import java.util.Map;
 public class ContestsParse {
 
     public static final ContestsParse INSTANCE = new ContestsParse();
-    public static final HashMap<String,ContestData> updateContests = new HashMap<>();
+    public static final HashMap<Long, HashSet<ContestData>> updateContests = new HashMap<>();
 
     private static final Config config = Config.INSTANCE;
     private static final Message message = Message.INSTANCE;
     private static final ContestsDataFile data = ContestsDataFile.INSTANCE;
-    private static final Map<String, ContestData> contestsMap = data.getContests();
+    private static final Map<Integer, ContestData> contestsMap = data.getContests();
 
 
     private String getContests(int count) throws IOException {
@@ -80,42 +79,60 @@ public class ContestsParse {
         }
     }
 
+    private void updateContestsAdd(long time,ContestData contestData){
+        if (!updateContests.containsKey(time)){
+            updateContests.put(time,new HashSet<>());
+        }
+
+        HashSet<ContestData> set = updateContests.get(time);
+        set.add(contestData);
+    }
+
     private boolean getUpdate(Contests contests) {
+
+        int count = 0;
 
         for (ContestData contestData : contests.getData()){
 
-            String contestName = contestData.getContestName();
+            int contestID = contestData.getContestId();
 //            if (!contestsMap.containsKey(contestName)){
 //                updateContests.put(contestName,contestData);
 //            }
 
-            contestsMap.put(contestName,contestData);
+            contestsMap.put(contestID,contestData);
 
             long nowTime = System.currentTimeMillis() / 1000;
             long startAt = contestData.getStartAt();
-            long endAt = contestData.getEndAt();
+//            long endAt = contestData.getEndAt();
+            long startTime = (long) config.getMonitorContestTime() * 60 * 1000;
+            long startRemindAt = startAt * 1000 - startTime;
+//            long endTime = (long) config.getMonitorContestEndTime() * 60 * 1000;
+//            long endRemindAt = endAt * 1000 - endTime;
 
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm");
-            String time = simpleDateFormat.format(startAt * 1000);
-            System.out.println(time);
+//            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm");
+//            String time = simpleDateFormat.format(startTime);
+
             //updateContests这个队列若有多个相同时间段的需要注意
-            if (nowTime < startAt){
-                updateContests.put(time,contestData);
+            if (!updateContests.containsKey(startRemindAt) && nowTime < startAt){
+                updateContestsAdd(startRemindAt,contestData);
+                ++count;
             }
 
-            //后期加上竞赛结束的信息
-//            if (nowTime > startAt && nowTime < endAt){
-//                updateContests.put(contestName,contestData);
+            //endTime将在新加队列里进行提醒
+//            if (!updateContests.containsKey(endRemindAt) && nowTime > startAt && nowTime < endAt){
+//                updateContests.put(endRemindAt,contestData);
+//                ++count;
 //            }
 
         }
-        return true;
+
+        return count > 0;
     }
 
-    public void sendMessage(ContestData contestData){
+    public void sendUpMessage(ContestData contestData){
 
         ArrayList<Group> groupList = UpdateRankerMapper.groupList;
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM/dd HH:mm");
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm");
 
         String contestName = contestData.getContestName();
         String startAt = simpleDateFormat.format(contestData.getStartAt() * 1000);
@@ -128,6 +145,13 @@ public class ContestsParse {
                     .replace("%endAt%",endAt)
                     .replace("%languages%","C / C++ / Java / Python"));
         }
+
+    }
+
+    public void sendDownMessage(ContestData contestData){
+
+        ArrayList<Group> groupList = UpdateRankerMapper.groupList;
+
     }
 
 }

@@ -25,15 +25,16 @@ public static final CloudOJRanking INSTANCE=new CloudOJRanking();
         CommandManager.INSTANCE.registerCommand(Command.INSTANCE,true);
         GlobalEventChannel.INSTANCE.registerListenerHost(new GroupMsg());
         reload();
-        RankingThread.run();
+        //执行线程
+        new RankingThread().run();
 
     }
 
     public void reload(){
         reloadPluginConfig(Config.INSTANCE);
         reloadPluginConfig(Message.INSTANCE);
+        reloadPluginConfig(Redis.INSTANCE);
         reloadPluginData(Data.INSTANCE);
         reloadPluginData(ContestsDataFile.INSTANCE);
-        reloadPluginConfig(Redis.INSTANCE);
     }
 }

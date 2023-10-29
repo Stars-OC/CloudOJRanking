@@ -38,6 +38,10 @@ public class GroupMsg extends SimpleListenerHost {
         String help = message.getHelp();
 
         String[] command = plain.split(" ");
+        if (command.length == 1){
+            group.sendMessage(help);
+        }
+
         switch (command[1]){
             case "排行榜":
                 if(mapper.getRankingUpNow(group)){

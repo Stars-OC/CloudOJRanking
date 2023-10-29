@@ -102,7 +102,6 @@ public class UpdateRankerMapper {
 
             ForwardMessage build = builder.build();
             group.sendMessage(build);
-            //TODO 后面测试不同群聊这个的存储方式
             rankingUpMessage = build;
 
         }
