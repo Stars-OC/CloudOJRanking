@@ -30,6 +30,7 @@ public class RankingParse {
     //private final String rankUrl = config.getUrl() + config.getRankingApi();
 
     public String getRanks(int count) throws IOException {
+
         //获取json格式的数据
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder()

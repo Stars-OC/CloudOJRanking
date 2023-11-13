@@ -11,6 +11,12 @@ public class UpdateRanker {
     public UpdateRanker() {
     }
 
+    public UpdateRanker(Ranker ranker){
+        this.userId = ranker.getUsername();
+        this.score = ranker.getScore();
+        this.rank = ranker.getRank();
+        this.passed = ranker.getPassed();
+    }
     public UpdateRanker(String userId,double score, int rank, int passed) {
         this.userId = userId;
         this.score = score;

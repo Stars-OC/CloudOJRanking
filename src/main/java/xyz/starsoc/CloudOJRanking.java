@@ -26,8 +26,12 @@ public static final CloudOJRanking INSTANCE=new CloudOJRanking();
         GlobalEventChannel.INSTANCE.registerListenerHost(new GroupMsg());
         reload();
         //执行线程
-        new RankingThread().run();
 
+        try{
+            new RankingThread().run();
+        }catch (Exception e){
+            new RankingThread().run();
+        }
     }
 
     public void reload(){

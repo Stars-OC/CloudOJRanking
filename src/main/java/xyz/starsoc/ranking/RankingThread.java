@@ -41,35 +41,37 @@ public class RankingThread {
 
         Runnable runnable = () -> {
 
-            if (init){
-                init = false;
-                mapper.init();
-            }
+            try{
 
-            //logger.info("init完成");
-
-            //用来更新日榜
-            Date date = new Date();
-            long dateTime = date.getTime();
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm");
-            String time = simpleDateFormat.format(date);
-            //用来矫正时间
-            if (timeVerify && "00".equals(time.split(":")[1])){
-                timeVerify = false;
-                times = -1;
-            }
-
-            if (time.equals(config.getRankingUpTime())){
-                mapper.sendRankingUp();
-            }
-
-            if (updateContests.containsKey(dateTime)){
-
-                for (ContestData contestData : updateContests.get(dateTime)) {
-                    makeEvent(dateTime,contestData);
+                if (init){
+                    init = false;
+                    mapper.init();
                 }
 
-            }
+                //logger.info("init完成");
+
+                //用来更新日榜
+                Date date = new Date();
+                long dateTime = date.getTime();
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm");
+                String time = simpleDateFormat.format(date);
+                //用来矫正时间
+                if (timeVerify && "00".equals(time.split(":")[1])){
+                    timeVerify = false;
+                    times = -1;
+                }
+
+                if (time.equals(config.getRankingUpTime())){
+                    mapper.sendRankingUp();
+                }
+
+                if (updateContests.containsKey(dateTime)){
+
+                    for (ContestData contestData : updateContests.get(dateTime)) {
+                        makeEvent(dateTime,contestData);
+                    }
+
+                }
 
 //            long remindAt = (long) config.getMonitorContestTime() * 60 * 1000;
 //            long enableTime = dateTime - remindAt;
@@ -81,40 +83,44 @@ public class RankingThread {
 //                }
 //            }
 
-            //当日排行榜推送
-            if (config.getRankingUpTimeNow().contains(time)){
-                mapper.sendRankingUpNow();
-            }
+                //当日排行榜推送
+                if (config.getRankingUpTimeNow().contains(time)){
+                    mapper.sendRankingUpNow();
+                }
 
-            ++times;
+                ++times;
 
-            if(times%config.getCheckTime() == 0 && parse.checkRanking()){
-                //按照规定进行发送相关消息
+                if(times%config.getCheckTime() == 0 && parse.checkRanking()){
+                    //按照规定进行发送相关消息
 
                     logger.info("获取排行榜数据成功");
                     mapper.sendUpdateMessage();
 
-            }
-
-            if (times%config.getCheckContestTime() == 0 && contestsParse.checkUpdate()){
-
-                logger.info("获取竞赛数据成功");
-
-            }
-
-            if (!contestsUp.isEmpty() && times%config.getCheckContestRankTime() == 0){
-
-                for (int contestID : contestsUp){
-
-                    String contestName = contests.get(contestID).getContestName();
-                    if (!contestRank.checkUpdate(contestID)) {
-                        logger.info("竞赛 " + contestName + "(" + contestID + ") 暂未获取到排行变化数据");
-                        continue;
-                    }
-
-                    logger.info("竞赛 " + contestName + "(" + contestID + ")  获取排行变化数据成功");
                 }
 
+                if (times%config.getCheckContestTime() == 0 && contestsParse.checkUpdate()){
+
+                    logger.info("获取竞赛数据成功");
+
+                }
+
+                if (!contestsUp.isEmpty() && times%config.getCheckContestRankTime() == 0){
+
+                    for (int contestID : contestsUp){
+
+                        String contestName = contests.get(contestID).getContestName();
+                        if (!contestRank.checkUpdate(contestID)) {
+                            logger.info("竞赛 " + contestName + "(" + contestID + ") 暂未获取到排行变化数据");
+                            continue;
+                        }
+
+                        logger.info("竞赛 " + contestName + "(" + contestID + ")  获取排行变化数据成功");
+                    }
+
+                }
+
+            }catch (Exception e){
+                logger.error("线程出错 {}",e.getMessage());
             }
 
         };
