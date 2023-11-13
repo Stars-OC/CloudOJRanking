@@ -42,7 +42,7 @@ public class ContestRankMapper {
         return new Gson().toJson(ranker);
     }
 
-    private Ranker getRanker(String json){
+    private ContestRanker getRanker(String json){
         return new Gson().fromJson(json,ContestRanker.class);
     }
 

@@ -17,7 +17,7 @@ public class ContestRanker extends Ranker implements Serializable {
     public static class Details implements Serializable {
         private Integer result;
 
-        private Integer score;
+        private Double score;
 
         private Integer problemId;
 
@@ -30,11 +30,11 @@ public class ContestRanker extends Ranker implements Serializable {
             this.result = result;
         }
 
-        public Integer getScore() {
+        public Double getScore() {
             return this.score;
         }
 
-        public void setScore(Integer score) {
+        public void setScore(Double score) {
             this.score = score;
         }
 
