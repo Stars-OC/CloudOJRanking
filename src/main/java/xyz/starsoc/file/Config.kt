@@ -47,5 +47,5 @@ object Config : AutoSavePluginConfig("config") {
     @ValueDescription("这是竞赛api地址")
     val contentsApi by value("api/core/contest?page=%d&limit=%d")
     @ValueDescription("这是竞赛排行榜api地址")
-    val contentRankApi by value("api/core/ranking/contest/%d?page=%d&limit=%d")
+    val contentRankApi by value("api/core/ranking/contest/%d")
 }

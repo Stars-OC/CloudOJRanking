@@ -16,6 +16,13 @@ object Message : AutoSavePluginConfig("message") {
 
     val contestsUp by value("==== %contestName% ====\n将于 " + Config.monitorContestTime + "min后开始，请做好准备\n语言限制：%languages%\n%startAt% - %endAt%\n竞赛网址: (" + Config.url + "contests)")
 
+    val prefixContestRanking by value("==== 竞赛 %contestName% 提升排行榜 ====\n 竞赛于 %startAt% - %endAt% 进行中")
+    val contestRankUp by value("太稳了！%name% 在CloudOJ的 “%contestName%” 中又提升了 %rankUp% 名！")
+    val contestScoreUp by value("太帅了！%name% 在CloudOJ的 “%contestName%” 中又获得了 %scoreUp% 分！")
+    val contestPassedUp by value("太强了！%name% 在CloudOJ的 “%contestName%” 中成功 AC 了 %passedUp% 题！")
+    val suffixContestRankingUp by value("数据更新于%date% \n竞赛网址: " + Config.url + "/contests ")
+    val contestInvited by value("%contestName% 竞赛 用邀请码 %inviteKey% 邀请你加入")
+
     val help by value("=====CloudOJRanking 帮助=====" +
             "\n!(！)ranking 排行榜 查看今日冲分榜" +
             "\n!(！)ranking 昨日排行榜 查看昨日冲分榜")

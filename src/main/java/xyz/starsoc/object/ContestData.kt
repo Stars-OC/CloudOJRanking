@@ -13,5 +13,6 @@ open class ContestData {
     var endAt: Long? = null
     var startAt: Long? = null
     var createAt: Long? = null
-//    val inviteKey: String? = null
+    var inviteKey: String? = null
+    var init : Boolean = false
 }

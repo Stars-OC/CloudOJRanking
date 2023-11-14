@@ -6,6 +6,7 @@ import xyz.starsoc.file.Redis;
 import xyz.starsoc.object.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -17,7 +18,8 @@ public class ContestRankMapper {
 
     public static final ContestRankMapper INSTANCE = new ContestRankMapper();
 
-    public static final ArrayList<UpdateRanker> mapper = new ArrayList<>();
+    /** 根据比赛ID获取排名对象 */
+    public static final HashMap<Integer,ArrayList<UpdateRanker>> updateRankers = new HashMap<>();
 
     private final Redis redis = Redis.INSTANCE;
 
@@ -49,11 +51,15 @@ public class ContestRankMapper {
     /**
      * 更新排名
      * @param contestID  - 比赛ID
-     * @param ranking     - 排名对象
+     * @param ranking    - 排名对象
      */
-    public void updateRanking(String contestID,ContestRanking ranking){
+    public void updateRanking(int contestID,ContestRanking ranking){
 
-        //TODO 因为json格式改变，现在将推迟进度
+        if (!updateRankers.containsKey(contestID)){
+            updateRankers.put(contestID,new ArrayList<>());
+        }
+        // 遍历排名数据
+        ArrayList<UpdateRanker> rankers = updateRankers.get(contestID);
 
         // 比赛名称 = "Contest-" + contestID
         String name = "Contest-" + contestID;
@@ -73,14 +79,14 @@ public class ContestRankMapper {
             if (!oldRanking.containsKey(username)){
                 // 将用户信息存入Redis
                 pool.hset(name, username, rankerJson);
-                mapper.add(new UpdateRanker(ranker));
+                rankers.add(new UpdateRanker(ranker));
                 continue;
             }
 
             // 获取旧排名的JSON字符串
             String oldJson = oldRanking.get(username);
             // 将JSON字符串转换为旧排名对象
-            Ranker oldRanker = getRanker(oldJson);
+            ContestRanker oldRanker = getRanker(oldJson);
 
             // 更新旧排名对象的信息
             getUpdateRanker(oldRanker, ranker);
@@ -92,10 +98,13 @@ public class ContestRankMapper {
 
         // 关闭Redis连接
         pool.close();
+        oldRanking.clear();
     }
 
 
-    private void getUpdateRanker(Ranker oldRanker, Ranker ranker){
+
+
+    private UpdateRanker getUpdateRanker(ContestRanker oldRanker, ContestRanker ranker){
 
         String username = ranker.getUsername();
 
@@ -108,7 +117,8 @@ public class ContestRankMapper {
         UpdateRanker updateRanker = null;
         if (rank > 0 || score > 0 || passed > 0){
             updateRanker = new UpdateRanker(username,score,rank,passed);
-            mapper.add(updateRanker);
+            return updateRanker;
         }
+        return null;
     }
 }

@@ -52,7 +52,7 @@ public class RankingThread {
 
                 //用来更新日榜
                 Date date = new Date();
-                long dateTime = date.getTime();
+                long dateTime = date.getTime() / 1000 / 60;
                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm");
                 String time = simpleDateFormat.format(date);
                 //用来矫正时间
@@ -65,8 +65,8 @@ public class RankingThread {
                     mapper.sendRankingUp();
                 }
 
+//                System.out.println(dateTime);
                 if (updateContests.containsKey(dateTime)){
-
                     for (ContestData contestData : updateContests.get(dateTime)) {
                         makeEvent(dateTime,contestData);
                     }
@@ -110,11 +110,12 @@ public class RankingThread {
 
                         String contestName = contests.get(contestID).getContestName();
                         if (!contestRank.checkUpdate(contestID)) {
-                            logger.info("竞赛 " + contestName + "(" + contestID + ") 暂未获取到排行变化数据");
+                            logger.info("竞赛 " + contestName + "(" + contestID + ") 获取排行变化数据失败");
                             continue;
                         }
 
                         logger.info("竞赛 " + contestName + "(" + contestID + ")  获取排行变化数据成功");
+                        contestRank.sendUpdateMessage(contestID);
                     }
 
                 }
@@ -128,32 +129,46 @@ public class RankingThread {
         service.scheduleAtFixedRate(runnable, 20, 60, TimeUnit.SECONDS);
     }
 
+    /**
+     * 创建事件
+     *
+     * @param dateTime 事件日期时间
+     * @param contestData 竞赛数据
+     */
     public void makeEvent(long dateTime, @NotNull ContestData contestData){
 
-        if (contestData.getEnded()){
-            //结束
+        if (contestData.getEnded() && contestData.getInit()){
+            // 如果竞赛已经结束，则发送消息通知相关操作
             contestsParse.sendDownMessage(contestData);
             updateContestsRemove(dateTime,contestData);
 
-        }else if(contestData.getStarted() && !contestData.getEnded()){
-            //已经开始 开启线程
-            contestRank.init(contestData.getContestId());
-            logger.info("竞赛 " + contestData.getContestName() + "(" + contestData.getContestId() + ") 排行榜数据开始进行监听");
+        }else if(contestData.getStarted() && !contestData.getEnded() && !contestData.getInit()){
+            // 如果竞赛已经开始，则初始化竞赛排名并开始监听
+            contestRank.init(contestData);
+
 
         }else if(!contestData.getStarted()){
-            //没有开始
+            // 如果竞赛还没有开始，则发送消息通知相关操作
             contestsParse.sendUpMessage(contestData);
         }
 
     }
 
-    private void updateContestsRemove(long dateTime, ContestData contestData){
 
+    /**
+     * 更新指定时间的竞赛集合，将指定的竞赛数据从集合中移除
+     * @param dateTime 移除的时间点
+     * @param contestData 移除的竞赛数据
+     */
+    private void updateContestsRemove(long dateTime, ContestData contestData){
+        // 从更新竞赛集合中获取指定时间的竞赛集合
         HashSet<ContestData> set = updateContests.get(dateTime);
+        // 从竞赛集合中移除指定的竞赛数据
         set.remove(contestData);
+        // 如果竞赛集合为空，则从更新竞赛集合中移除该时间点的竞赛集合
         if (set.isEmpty()){
             updateContests.remove(dateTime);
         }
-
     }
+
 }

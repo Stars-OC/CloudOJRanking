@@ -8,4 +8,5 @@ object Redis : AutoSavePluginConfig("redis") {
     val port by value(6379)
     val username by value("")
     val password by value("")
+    val contestTTL by value(60)
 }

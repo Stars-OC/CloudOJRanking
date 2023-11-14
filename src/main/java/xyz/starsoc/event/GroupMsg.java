@@ -62,7 +62,8 @@ public class GroupMsg extends SimpleListenerHost {
                 group.sendMessage(help);
                 return;
             default:
-                group.sendMessage(help);
+                break;
         }
+
     }
 }

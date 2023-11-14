@@ -2,7 +2,11 @@ package xyz.starsoc.object;
 
 public class UpdateRanker {
 
+    /** 这是用户的Username
+     */
     private String userId;
+
+    private String nickname;
     private double score;
     private int rank;
     private int passed;
@@ -66,5 +70,13 @@ public class UpdateRanker {
 
     public void setText(String text) {
         this.text = text;
+    }
+
+    public String getNickname() {
+        return nickname;
+    }
+
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
     }
 }
