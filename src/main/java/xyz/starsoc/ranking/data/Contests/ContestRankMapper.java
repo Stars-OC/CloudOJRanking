@@ -89,7 +89,10 @@ public class ContestRankMapper {
             ContestRanker oldRanker = getRanker(oldJson);
 
             // 更新旧排名对象的信息
-            getUpdateRanker(oldRanker, ranker);
+            UpdateRanker updateRanker = getUpdateRanker(oldRanker, ranker);
+            if (updateRanker != null){
+                rankers.add(updateRanker);
+            }
 
             // 将用户信息更新至Redis
             pool.hset(name, username,rankerJson);
@@ -104,6 +107,13 @@ public class ContestRankMapper {
 
 
 
+    /**
+     * 获取更新后的排名计算器
+     *
+     * @param oldRanker 旧的排名计算器
+     * @param ranker 当前的排名计算器
+     * @return 更新后的排名计算器，如果无变化则返回null
+     */
     private UpdateRanker getUpdateRanker(ContestRanker oldRanker, ContestRanker ranker){
 
         String username = ranker.getUsername();
@@ -116,9 +126,10 @@ public class ContestRankMapper {
 
         UpdateRanker updateRanker = null;
         if (rank > 0 || score > 0 || passed > 0){
-            updateRanker = new UpdateRanker(username,score,rank,passed);
+            updateRanker = new UpdateRanker(username, ranker.getNickname(), score,rank,passed);
             return updateRanker;
         }
         return null;
     }
+
 }

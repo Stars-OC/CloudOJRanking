@@ -16,6 +16,7 @@ public class UpdateRanker {
     }
 
     public UpdateRanker(Ranker ranker){
+        this.nickname = ranker.getNickname();
         this.userId = ranker.getUsername();
         this.score = ranker.getScore();
         this.rank = ranker.getRank();
@@ -26,6 +27,14 @@ public class UpdateRanker {
         this.score = score;
         this.rank = rank;
         this.passed = passed;
+    }
+
+    public UpdateRanker(String userId,String nickname,double score, int rank, int passed) {
+        this.userId = userId;
+        this.score = score;
+        this.rank = rank;
+        this.passed = passed;
+        this.nickname = nickname;
     }
 
     public int getPassed() {

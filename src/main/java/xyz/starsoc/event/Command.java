@@ -43,7 +43,7 @@ public class Command extends JCompositeCommand {
             sender.sendMessage("该竞赛不存在");
         }
         ContestData contest = contests.get(Integer.parseInt(contestId));
-        if (!contest.getInviteKey().equals(inviteKey)){
+        if (!inviteKey.equals(contest.getInviteKey())){
             contest.setInviteKey(inviteKey);
             sender.sendMessage("竞赛 " + contest.getContestName() + " 的邀请码已更新为 [" + inviteKey + "]");
         }else {

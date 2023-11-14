@@ -113,12 +113,16 @@ public class ContestsParse {
 //                updateContests.put(contestName,contestData);
 //            }
 
+            //后面逻辑进行重写 进行hashcode校验对象
+            if (contestData.getInit() || contestData.getInviteKey() != null){
+                continue;
+            }
             contestsMap.put(contestID,contestData);
 
             long nowTime = System.currentTimeMillis() / 1000 / 60;
             long startAt = contestData.getStartAt() / 60;
             long endAt = contestData.getEndAt() / 60;
-            long startTime = (long) config.getMonitorContestTime();
+            long startTime = config.getMonitorContestTime();
             long startRemindAt = startAt - startTime;
 //            long endTime = (long) config.getMonitorContestEndTime() * 60 * 1000;
 //            long endRemindAt = endTime * 1000 - endTime;
@@ -126,7 +130,6 @@ public class ContestsParse {
 //            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm");
 //            String time = simpleDateFormat.format(startTime);
 
-            //TODO 利用字符串比对
             //updateContests这个队列若有多个相同时间段的需要注意
             if (nowTime < startAt){
                 updateContestsAdd(startRemindAt,contestData);

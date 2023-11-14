@@ -173,7 +173,7 @@ public class ContestRank {
             }
             group.sendMessage(builder.build());
         }
-
+        rankers.clear();
 
     }
 
