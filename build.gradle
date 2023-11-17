@@ -6,7 +6,7 @@ plugins {
 }
 
 group = 'xyz.starsoc'
-version = '0.5.1'
+version = '0.5.5'
 
 repositories {
     mavenLocal()

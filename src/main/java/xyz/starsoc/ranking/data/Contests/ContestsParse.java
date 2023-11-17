@@ -34,24 +34,39 @@ public class ContestsParse {
     private static final Map<Integer, ContestData> contestsMap = data.getContests();
 
 
+    /**
+     * 根据给定的数量获取比赛数据
+     * @param count 比赛数量
+     * @return 比赛数据的json格式字符串，如果获取失败返回null
+     * @throws IOException 如果发生I/O错误
+     */
     private String getContests(int count) throws IOException {
-        //获取json格式的数据
+        // 创建OkHttpClient对象
         OkHttpClient client = new OkHttpClient();
+        // 创建Request对象，并设置请求的URL和请求方法
         Request request = new Request.Builder()
-                .url(String.format(config.getUrl() + config.getContentsApi(),1,count))
+                .url(String.format(config.getUrl() + config.getContentsApi(), 1, count))
                 .build();
+        // 执行请求，并得到Response对象
         Response execute = client.newCall(request).execute();
-        if(!execute.isSuccessful()){
+        // 如果请求执行成功
+        if (!execute.isSuccessful()) {
+            // 返回空字符串
             return null;
         }
-
+        // 返回响应体的数据，即比赛数据的json格式字符串
         return execute.body().string();
     }
+
 
     private Contests getContestData(String json){
         return new Gson().fromJson(json, Contests.class);
     }
 
+    /**
+     * 检查是否有更新
+     * @return 如果有更新则返回true，否则返回false
+     */
     public boolean checkUpdate(){
         try {
             // 获取数据总数量
@@ -83,6 +98,7 @@ public class ContestsParse {
     }
 
 
+
     /**
      * 更新竞赛数据
      *
@@ -102,6 +118,11 @@ public class ContestsParse {
     }
 
 
+    /**
+     * 更新比赛信息
+     * @param contests 比赛对象
+     * @return 是否需要更新比赛信息
+     */
     private boolean getUpdate(Contests contests) {
 
         int count = 0;
@@ -109,14 +130,15 @@ public class ContestsParse {
         for (ContestData contestData : contests.getData()){
 
             int contestID = contestData.getContestId();
-//            if (!contestsMap.containsKey(contestName)){
-//                updateContests.put(contestName,contestData);
-//            }
 
-            //后面逻辑进行重写 进行hashcode校验对象
-            if (contestData.getInit()){
-                continue;
+            // 如果比赛已经初始化，则跳过
+            if (contestsMap.containsKey(contestID)){
+                ContestData old = contestsMap.get(contestID);
+                contestData.setInviteKey(old.getInviteKey());
+                contestData.setInit(old.getInit());
             }
+
+            // 将比赛数据添加到 contestsMap 中
             contestsMap.put(contestID,contestData);
 
             long nowTime = System.currentTimeMillis() / 1000 / 60;
@@ -125,43 +147,27 @@ public class ContestsParse {
             long startTime = config.getMonitorContestTime();
             long startRemindAt = startAt - startTime;
             long endTimeAt = endAt - config.getMonitorContestEndTime();
-//            long endTime = (long) config.getMonitorContestEndTime() * 60 * 1000;
-//            long endRemindAt = endTime * 1000 - endTime;
 
-//            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm");
-//            String time = simpleDateFormat.format(startTime);
-
-            //updateContests这个队列若有多个相同时间段的需要注意
+            // 如果当前时间小于比赛开始时间，将提醒时间添加到 updateContests 中
             if (nowTime < startAt){
                 updateContestsAdd(startRemindAt,contestData);
                 ++count;
             }
 
             long startTimeAt = nowTime + config.getCheckContestRankTime();
-//            if (!contestData.getEnded()){
-//                System.out.println(nowTime);
-//                System.out.println(endAt);
-//                System.out.println(startTimeAt);
-//            }
-            //若在比赛也要进行
-            if (nowTime > startAt && nowTime < endAt){
 
+            // 如果当前时间在比赛进行中，将提醒时间添加到 updateContests 中
+            if (nowTime > startAt && nowTime < endAt){
                 updateContestsAdd(startTimeAt,contestData);
-//                System.out.println(endTimeAt);
                 updateContestsAdd(endTimeAt,contestData);
                 ++count;
             }
-
-            //endTime将在新加队列里进行提醒
-//            if (!updateContests.containsKey(endRemindAt) && nowTime > startAt && nowTime < endAt){
-//                updateContests.put(endRemindAt,contestData);
-//                ++count;
-//            }
-
         }
 
+        // 如果需要更新比赛信息，返回 true，否则返回 false
         return count > 0;
     }
+
 
     /**
      * 向群聊发送消息

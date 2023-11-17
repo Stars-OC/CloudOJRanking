@@ -59,12 +59,19 @@ public class ContestRank {
 
 
     public void init(ContestData contestData) {
+        // 获取竞赛的ID
         Integer contestId = contestData.getContestId();
-        // 将contestId添加到contestsUp集合中
+
+        // 将竞赛ID添加到contestsUp集合中
         contestsUp.add(contestId);
+
+        // 记录日志，表示开始监听竞赛排行榜数据
         logger.info("竞赛 " + contestData.getContestName() + "(" + contestId + ") 排行榜数据开始进行监听");
+
+        // 设置contestData的init标志为true，表示已经初始化完成
         contestData.setInit(true);
     }
+
 
 
     /**
@@ -100,81 +107,97 @@ public class ContestRank {
 
 
     public void sendUpdateMessage(int contestID) {
+        // 检查是否包含指定比赛ID的排行榜更新信息，如果没有则返回
         if (!updateRankers.containsKey(contestID)){
             return;
         }
+        // 获取指定比赛ID的排行榜更新信息列表
         ArrayList<UpdateRanker> rankers = updateRankers.get(contestID);
+        // 如果排行榜更新信息列表为空，则输出提示信息并返回
         if (rankers.isEmpty()){
             logger.info("竞赛 {} 排行榜暂未更新", contestID);
             return;
         }
+        // 获取当前时间及日期
         Date dateTime = new Date();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
         String today = simpleDateFormat.format(dateTime);
+        // 获取指定比赛ID的竞赛数据
         ContestData contestData = contests.get(contestID);
+        // 获取比赛的开始时间和结束时间
         String startAt = simpleDateFormat.format(contestData.getStartAt() * 1000);
         String endAt = simpleDateFormat.format(contestData.getEndAt() * 1000);
+        // 获取比赛名称
         String contestName = contestData.getContestName();
+        // 遍历群组列表
         for(Group group : groupList){
-
+            // 创建消息转发构建器
             ForwardMessageBuilder builder = new ForwardMessageBuilder(group);
+            // 添加比赛排名更新消息
             builder.add(config.getBot(),"CloudOJ竞赛推送",new PlainText(message.getPrefixContestRanking()
                     .replace("%contestName%", contestName)
                     .replace("%startAt%",startAt)
                     .replace("%endAt%",endAt)));
-
+            // 遍历排行榜更新信息列表
             for(UpdateRanker updateRanker : rankers){
-
-                //正常发送符合需要的人
-                String msg = "";
+                // 发送符合需要的消息给指定用户
                 String userId = updateRanker.getUserId();
-
+                // 获取用户的昵称
                 String name = updateRanker.getNickname() + "(" + userId + ")";
-
+                // 获取用户的排名
                 int rank = updateRanker.getRank();
+                // 如果有排名更新，则将更新后的排名加入消息
                 if(rank > 0){
-                    msg += message.getContestRankUp()
+                    String rankUpMsg = message.getContestRankUp()
                             .replace("%name%",name)
                             .replace("%contestName%", contestName)
                             .replace("%rankUp%", rank + "");
+                    builder.add(config.getBot(),"CloudOJ竞赛推送", new PlainText(rankUpMsg));
                 }
-
+                // 获取用户的得分
                 double score = updateRanker.getScore();
+                // 如果有得分更新，则将更新后的得分加入消息
                 if(score > 0){
-                    msg += message.getContestScoreUp()
+                    String scoreUpMsg = message.getContestScoreUp()
                             .replace("%name%",name)
                             .replace("%contestName%", contestName)
                             .replace("%scoreUp%",score + "");
+                    builder.add(config.getBot(),"CloudOJ竞赛推送", new PlainText(scoreUpMsg));
                 }
-
+                // 获取用户的通过题目数量
                 int passed = updateRanker.getPassed();
+                // 如果有通过题目数量更新，则将更新后的通过题目数量加入消息
                 if(passed > 0){
-                    msg += message.getContestPassedUp()
+                    String passedUpMsg = message.getContestPassedUp()
                             .replace("%name%",name)
                             .replace("%contestName%", contestName)
                             .replace("%passedUp%",passed + "");
+                    builder.add(config.getBot(),"CloudOJ竞赛推送", new PlainText(passedUpMsg));
                 }
-
+                // 获取用户的自定义消息
                 String text = updateRanker.getText();
+                // 如果有自定义消息，则将其加入到消息中
                 if (text != null){
-                    msg += text.replace("%name%",name) + "\n";
+                    String customMsg = text.replace("%name%",name) + "\n";
+                    builder.add(config.getBot(),"CloudOJ竞赛推送", new PlainText(customMsg));
                 }
-
-                builder.add(config.getBot(),"CloudOJ竞赛推送", new PlainText(msg));
             }
-
+            // 添加比赛排名更新的尾部消息
             builder.add(config.getBot(),"CloudOJ竞赛推送", new PlainText(message.getSuffixContestRankingUp()
                     .replace("%date%",today)));
+            // 如果比赛有邀请码，则添加比赛邀请消息
             if (contestData.getInviteKey() != null){
                 builder.add(config.getBot(),"CloudOJ竞赛推送", new PlainText(message.getContestInvited()
                        .replace("%contestName%", contestName)
                        .replace("%inviteKey%", contestData.getInviteKey())));
             }
+            // 发送消息
             group.sendMessage(builder.build());
         }
+        // 清空排行榜更新信息列表
         rankers.clear();
-
     }
+
 
 }
