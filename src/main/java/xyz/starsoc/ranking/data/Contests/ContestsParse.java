@@ -114,7 +114,7 @@ public class ContestsParse {
 //            }
 
             //后面逻辑进行重写 进行hashcode校验对象
-            if (contestData.getInit() || contestData.getInviteKey() != null){
+            if (contestData.getInit()){
                 continue;
             }
             contestsMap.put(contestID,contestData);
@@ -124,6 +124,7 @@ public class ContestsParse {
             long endAt = contestData.getEndAt() / 60;
             long startTime = config.getMonitorContestTime();
             long startRemindAt = startAt - startTime;
+            long endTimeAt = endAt - config.getMonitorContestEndTime();
 //            long endTime = (long) config.getMonitorContestEndTime() * 60 * 1000;
 //            long endRemindAt = endTime * 1000 - endTime;
 
@@ -136,7 +137,7 @@ public class ContestsParse {
                 ++count;
             }
 
-            long startTimeAt = nowTime + (long) config.getCheckContestRankTime();
+            long startTimeAt = nowTime + config.getCheckContestRankTime();
 //            if (!contestData.getEnded()){
 //                System.out.println(nowTime);
 //                System.out.println(endAt);
@@ -146,6 +147,8 @@ public class ContestsParse {
             if (nowTime > startAt && nowTime < endAt){
 
                 updateContestsAdd(startTimeAt,contestData);
+//                System.out.println(endTimeAt);
+                updateContestsAdd(endTimeAt,contestData);
                 ++count;
             }
 

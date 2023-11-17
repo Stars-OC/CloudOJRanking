@@ -20,7 +20,7 @@ object Config : AutoSavePluginConfig("config") {
     val checkContestTime by value(60)
     @ValueDescription("比赛开始前多长时间进行提醒 单位min")
     val monitorContestTime by value(60)
-    @ValueDescription("比赛前前多长时间进行提醒 单位min")
+    @ValueDescription("比赛结束前前多长时间进行提醒 单位min")
     val monitorContestEndTime by value(30)
     @ValueDescription("多久检测一次竞赛排行信息 单位min")
     val checkContestRankTime by value(5)

@@ -137,6 +137,7 @@ public class RankingThread {
      */
     public void makeEvent(long dateTime, @NotNull ContestData contestData){
 
+        //TODO将这个生命周期进行完善
         if (contestData.getEnded() && contestData.getInit()){
             // 如果竞赛已经结束，则发送消息通知相关操作
             contestsParse.sendDownMessage(contestData);
@@ -149,7 +150,8 @@ public class RankingThread {
         }else if(contestData.getStarted() && !contestData.getEnded() && !contestData.getInit()){
             // 如果竞赛已经开始，则初始化竞赛排名并开始监听
             contestRank.init(contestData);
-
+            // 结束这一进程
+            updateContestsRemove(dateTime,contestData);
 
         }else if(!contestData.getStarted()){
             // 如果竞赛还没有开始，则发送消息通知相关操作
