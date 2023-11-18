@@ -131,7 +131,7 @@ public class ContestsParse {
 
             int contestID = contestData.getContestId();
 
-            // 如果比赛已经初始化，则跳过
+            //如果有数据将重要数据进行保留
             if (contestsMap.containsKey(contestID)){
                 ContestData old = contestsMap.get(contestID);
                 contestData.setInviteKey(old.getInviteKey());
@@ -140,6 +140,10 @@ public class ContestsParse {
 
             // 将比赛数据添加到 contestsMap 中
             contestsMap.put(contestID,contestData);
+
+            if (contestData.getInit()){
+                continue;
+            }
 
             long nowTime = System.currentTimeMillis() / 1000 / 60;
             long startAt = contestData.getStartAt() / 60;

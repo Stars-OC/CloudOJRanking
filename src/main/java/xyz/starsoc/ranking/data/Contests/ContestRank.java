@@ -130,6 +130,9 @@ public class ContestRank {
         String endAt = simpleDateFormat.format(contestData.getEndAt() * 1000);
         // 获取比赛名称
         String contestName = contestData.getContestName();
+
+        String msg = "";
+
         // 遍历群组列表
         for(Group group : groupList){
             // 创建消息转发构建器
@@ -153,7 +156,7 @@ public class ContestRank {
                             .replace("%name%",name)
                             .replace("%contestName%", contestName)
                             .replace("%rankUp%", rank + "");
-                    builder.add(config.getBot(),"CloudOJ竞赛推送", new PlainText(rankUpMsg));
+                    msg += rankUpMsg + "\n";
                 }
                 // 获取用户的得分
                 double score = updateRanker.getScore();
@@ -163,7 +166,7 @@ public class ContestRank {
                             .replace("%name%",name)
                             .replace("%contestName%", contestName)
                             .replace("%scoreUp%",score + "");
-                    builder.add(config.getBot(),"CloudOJ竞赛推送", new PlainText(scoreUpMsg));
+                    msg += scoreUpMsg + "\n";
                 }
                 // 获取用户的通过题目数量
                 int passed = updateRanker.getPassed();
@@ -173,16 +176,17 @@ public class ContestRank {
                             .replace("%name%",name)
                             .replace("%contestName%", contestName)
                             .replace("%passedUp%",passed + "");
-                    builder.add(config.getBot(),"CloudOJ竞赛推送", new PlainText(passedUpMsg));
+                    msg += passedUpMsg + "\n";
                 }
                 // 获取用户的自定义消息
                 String text = updateRanker.getText();
                 // 如果有自定义消息，则将其加入到消息中
                 if (text != null){
                     String customMsg = text.replace("%name%",name) + "\n";
-                    builder.add(config.getBot(),"CloudOJ竞赛推送", new PlainText(customMsg));
+                    msg += customMsg + "\n";
                 }
             }
+            builder.add(config.getBot(),"CloudOJ竞赛推送", new PlainText(msg));
             // 添加比赛排名更新的尾部消息
             builder.add(config.getBot(),"CloudOJ竞赛推送", new PlainText(message.getSuffixContestRankingUp()
                     .replace("%date%",today)));
