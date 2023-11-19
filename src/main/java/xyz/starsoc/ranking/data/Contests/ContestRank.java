@@ -131,10 +131,9 @@ public class ContestRank {
         // 获取比赛名称
         String contestName = contestData.getContestName();
 
-        String msg = "";
-
         // 遍历群组列表
         for(Group group : groupList){
+            String msg = "";
             // 创建消息转发构建器
             ForwardMessageBuilder builder = new ForwardMessageBuilder(group);
             // 添加比赛排名更新消息
