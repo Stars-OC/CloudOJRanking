@@ -133,7 +133,6 @@ public class ContestRank {
 
         // 遍历群组列表
         for(Group group : groupList){
-            String msg = "";
             // 创建消息转发构建器
             ForwardMessageBuilder builder = new ForwardMessageBuilder(group);
             // 添加比赛排名更新消息
@@ -143,6 +142,7 @@ public class ContestRank {
                     .replace("%endAt%",endAt)));
             // 遍历排行榜更新信息列表
             for(UpdateRanker updateRanker : rankers){
+                String msg = "";
                 // 发送符合需要的消息给指定用户
                 String userId = updateRanker.getUserId();
                 // 获取用户的昵称
@@ -184,8 +184,8 @@ public class ContestRank {
                     String customMsg = text.replace("%name%",name) + "\n";
                     msg += customMsg + "\n";
                 }
+                builder.add(config.getBot(),"CloudOJ竞赛推送", new PlainText(msg));
             }
-            builder.add(config.getBot(),"CloudOJ竞赛推送", new PlainText(msg));
             // 添加比赛排名更新的尾部消息
             builder.add(config.getBot(),"CloudOJ竞赛推送", new PlainText(message.getSuffixContestRankingUp()
                     .replace("%date%",today)));
