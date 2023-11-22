@@ -7,6 +7,7 @@ import xyz.starsoc.object.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -68,7 +69,8 @@ public class ContestRankMapper {
         // 获取旧排名
         Map<String, String> oldRanking = pool.hgetAll(name);
         // 遍历排名数据
-        for (ContestRanker ranker : ranking.getRanking()) {
+        List<ContestRanking.Ranking> rankingList = ranking.getRanking();
+        for (ContestRanker ranker : rankingList) {
 
             // 获取用户名
             String username = ranker.getUsername();
@@ -79,7 +81,10 @@ public class ContestRankMapper {
             if (!oldRanking.containsKey(username)){
                 // 将用户信息存入Redis
                 pool.hset(name, username, rankerJson);
-                rankers.add(new UpdateRanker(ranker));
+                UpdateRanker updateRanker = new UpdateRanker(ranker);
+                // 设置排名
+                updateRanker.setRank(rankingList.size() - updateRanker.getRank());
+                rankers.add(updateRanker);
                 continue;
             }
 
