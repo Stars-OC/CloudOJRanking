@@ -125,8 +125,6 @@ public class ContestsParse {
      */
     private boolean getUpdate(Contests contests) {
 
-        int count = 0;
-
         for (ContestData contestData : contests.getData()){
 
             int contestID = contestData.getContestId();
@@ -155,7 +153,10 @@ public class ContestsParse {
             // 如果当前时间小于比赛开始时间，将提醒时间添加到 updateContests 中
             if (nowTime < startAt){
                 updateContestsAdd(startRemindAt,contestData);
-                ++count;
+                updateContestsAdd(endTimeAt,contestData);
+                updateContestsAdd(startAt,contestData);
+                updateContestsAdd(endAt,contestData);
+                return true;
             }
 
             long startTimeAt = nowTime + config.getCheckContestRankTime();
@@ -164,25 +165,35 @@ public class ContestsParse {
             if (nowTime > startAt && nowTime < endAt){
                 updateContestsAdd(startTimeAt,contestData);
                 updateContestsAdd(endTimeAt,contestData);
-                ++count;
+                updateContestsAdd(startAt,contestData);
+                updateContestsAdd(endAt,contestData);
+                return true;
             }
         }
 
         // 如果需要更新比赛信息，返回 true，否则返回 false
-        return count > 0;
+        return false;
     }
 
 
     /**
-     * 向群聊发送消息
-     *
+     * 开始前发送消息
      * @param contestData 比赛数据
      */
     public void sendUpMessage(ContestData contestData){
+        sendMessages(contestData,message.getContestsUp());
+    }
 
-        // 获取分组列表
+    /**
+     * 结束前发送消息
+     * @param contestData 比赛数据
+     */
+    public void sendDownMessage(ContestData contestData){
+        sendMessages(contestData, message.getContestsDown());
+    }
+
+    private void sendMessages(ContestData contestData, String contestMsg) {
         ArrayList<Group> groupList = UpdateRankerMapper.groupList;
-        // 创建日期格式对象
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm");
 
         // 获取比赛名称、开始时间和结束时间
@@ -190,21 +201,28 @@ public class ContestsParse {
         String startAt = simpleDateFormat.format(contestData.getStartAt() * 1000);
         String endAt = simpleDateFormat.format(contestData.getEndAt() * 1000);
 
+        String inviteKey = contestData.getInviteKey();
+        String inviteMsg = inviteKey != null ? "竞赛邀请码 " + inviteKey : "";
+        String msg = contestMsg
+                .replace("%contestName%", contestName)
+                .replace("%startAt%", startAt)
+                .replace("%endAt%", endAt)
+                .replace("%inviteKey%", inviteMsg)
+                .replace("%url%", config.getUrl())
+                .replace("%languages%", "C / C++ / Java / Python");
+
+
         // 遍历分组列表，发送比赛信息
-        for (Group group : groupList){
-            group.sendMessage(message.getContestsUp()
-                    .replace("%contestName%",contestName)
-                    .replace("%startAt%",startAt)
-                    .replace("%endAt%",endAt)
-                    .replace("%languages%","C / C++ / Java / Python"));
+        for (Group group : groupList) {
+            group.sendMessage(msg);
         }
     }
 
-
-    public void sendDownMessage(ContestData contestData){
-
-        ArrayList<Group> groupList = UpdateRankerMapper.groupList;
-
+    public void sendWillUpMessage(ContestData contestData) {
+        sendMessages(contestData,message.getContestsWillUp());
     }
 
+    public void sendWillDownMessage(ContestData contestData) {
+        sendMessages(contestData,message.getContestsWillDown());
+    }
 }

@@ -121,7 +121,7 @@ public class RankingThread {
                 }
 
             }catch (Exception e){
-                logger.error("线程出错 {}",e.getMessage());
+                logger.error("线程出错 {}",e.getMessage(),e);
             }
 
         };
@@ -130,7 +130,7 @@ public class RankingThread {
     }
 
     /**
-     * 创建事件
+     * 事件进行
      *
      * @param dateTime 事件日期时间
      * @param contestData 竞赛数据
@@ -140,24 +140,29 @@ public class RankingThread {
         //TODO将这个生命周期进行完善
         if (contestData.getEnded() && contestData.getInit()){
             // 如果竞赛已经结束，则发送消息通知相关操作
+
             contestsParse.sendDownMessage(contestData);
-            //删除整个生命周期
-            updateContestsRemove(dateTime,contestData);
+
             //结束监听
             contests.remove(contestData.getContestId());
+
             logger.info("竞赛 " + contestData.getContestName() + "(" + contestData.getContestId() + ") 结束监听");
+
+        }else if (contestData.getStarted() && !contestData.getEnded() && contestData.getInit()){
+            // 如果比赛即将结束
+            contestsParse.sendWillDownMessage(contestData);
 
         }else if(contestData.getStarted() && !contestData.getEnded() && !contestData.getInit()){
             // 如果竞赛已经开始，则初始化竞赛排名并开始监听
             contestRank.init(contestData);
-            // 结束这一进程
-            updateContestsRemove(dateTime,contestData);
+            contestsParse.sendUpMessage(contestData);
 
         }else if(!contestData.getStarted()){
             // 如果竞赛还没有开始，则发送消息通知相关操作
-            contestsParse.sendUpMessage(contestData);
+            contestsParse.sendWillUpMessage(contestData);
         }
-
+        // 结束这一进程
+        updateContestsRemove(dateTime,contestData);
     }
 
 

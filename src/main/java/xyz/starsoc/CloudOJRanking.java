@@ -13,7 +13,7 @@ public final class CloudOJRanking extends JavaPlugin{
 public static final CloudOJRanking INSTANCE=new CloudOJRanking();
 
     private CloudOJRanking(){
-        super(new JvmPluginDescriptionBuilder("xyz.starsoc.cloudojranking","0.5.5")
+        super(new JvmPluginDescriptionBuilder("xyz.starsoc.cloudojranking","0.6.0")
                 .name("CloudOJRanking")
                 .author("Clusters_stars")
                 .build());
@@ -26,12 +26,7 @@ public static final CloudOJRanking INSTANCE=new CloudOJRanking();
         GlobalEventChannel.INSTANCE.registerListenerHost(new GroupMsg());
         reload();
         //执行线程
-
-        try{
-            new RankingThread().run();
-        }catch (Exception e){
-            new RankingThread().run();
-        }
+        new RankingThread().run();
     }
 
     public void reload(){
