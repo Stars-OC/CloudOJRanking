@@ -95,7 +95,9 @@ public class RankingParse {
             oldRanker.setScore(0.0);
         }
 
-        double score = ranker.getScore() - oldRanker.getScore();
+        double rankerScore = ranker.getScore();
+        double oldRankerScore = oldRanker.getScore();
+        double score = rankerScore - oldRankerScore;
         int oldRankerRank = oldRanker.getRank();
         int rankerRank = ranker.getRank();
         int rank =  oldRankerRank - rankerRank;

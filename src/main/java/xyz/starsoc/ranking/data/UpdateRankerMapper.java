@@ -208,60 +208,60 @@ public class UpdateRankerMapper {
             return;
         }
 
+        //正常发送符合需要的人
+        String msg = "";
+        for(UpdateRanker updateRanker : updateRankers){
+
+            //积累上榜人员
+            updateRankingUp(updateRanker);
+
+            String userId = updateRanker.getUserId();
+            Ranker ranker = rankerMap.get(userId);
+            String name = ranker.getNickname() + "(" + userId + ")";
+            boolean isMonitored = ranker.getRank() <= config.getMonitorLimit();
+
+            int rank = updateRanker.getRank();
+            if(rank >= config.getRankLimit() || (isMonitored && rank > 0)){
+                int newRank = ranker.getRank();
+                msg += message.getRankUp()
+                        .replace("%name%",name)
+                        .replace("%rankUp%", rank + "")
+                        .replace("%oldRank%",(newRank + rank) + "")
+                        .replace("%newRank%",newRank + "");
+            }
+
+            double score = updateRanker.getScore();
+            if(score >= config.getScoreLimit() || (isMonitored && score > 0)){
+                msg += message.getScoreUp()
+                        .replace("%name%",name)
+                        .replace("%scoreUp%",score + "");
+            }
+
+            int passed = updateRanker.getPassed();
+            if(passed >= config.getPassedLimit() || (isMonitored && passed > 0)){
+                msg += message.getPassedUp()
+                        .replace("%name%",name)
+                        .replace("%passedUp%",passed + "")
+                        .replace("%passed%",ranker.getPassed() + "");
+            }
+
+            String text = updateRanker.getText();
+            if (text != null){
+                msg += text.replace("%name%",name) + "\n";
+            }
+
+        }
+        updateRankers.clear();
+
         for(Group group : groupList){
 
             ForwardMessageBuilder builder = new ForwardMessageBuilder(group);
 
-            for(UpdateRanker updateRanker : updateRankers){
-
-                //积累上榜人员
-                updateRankingUp(updateRanker);
-
-                //正常发送符合需要的人
-                String msg = "";
-                String userId = updateRanker.getUserId();
-                Ranker ranker = rankerMap.get(userId);
-                String name = ranker.getNickname() + "(" + userId + ")";
-                boolean isMonitored = ranker.getRank() <= config.getMonitorLimit();
-
-                int rank = updateRanker.getRank();
-                if(rank >= config.getRankLimit() || (isMonitored && rank > 0)){
-                    int newRank = ranker.getRank();
-                    msg += message.getRankUp()
-                            .replace("%name%",name)
-                            .replace("%rankUp%", rank + "")
-                            .replace("%oldRank%",(newRank + rank) + "")
-                            .replace("%newRank%",newRank + "");
-                }
-
-                double score = updateRanker.getScore();
-                if(score >= config.getScoreLimit() || (isMonitored && score > 0)){
-                    msg += message.getScoreUp()
-                            .replace("%name%",name)
-                            .replace("%scoreUp%",score + "");
-                }
-
-                int passed = updateRanker.getPassed();
-                if(passed >= config.getPassedLimit() || (isMonitored && passed > 0)){
-                    msg += message.getPassedUp()
-                            .replace("%name%",name)
-                            .replace("%passedUp%",passed + "")
-                            .replace("%passed%",ranker.getPassed() + "");
-                }
-
-                String text = updateRanker.getText();
-                if (text != null){
-                    msg += text.replace("%name%",name) + "\n";
-                }
-
-                builder.add(config.getBot(),"CloudOJ推送", new PlainText(msg));
-            }
+            builder.add(config.getBot(),"CloudOJ推送", new PlainText(msg));
 
             builder.add(config.getBot(),"CloudOJ推送", new PlainText(message.getSuffix()));
             group.sendMessage(builder.build());
         }
-
-        updateRankers.clear();
 
     }
 }
