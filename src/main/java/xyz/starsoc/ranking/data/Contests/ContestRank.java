@@ -186,8 +186,7 @@ public class ContestRank {
                 }
                 builder.add(config.getBot(),"CloudOJ竞赛推送", new PlainText(msg));
             }
-            // 清空排行榜更新信息列表
-            rankers.clear();
+
             // 添加比赛排名更新的尾部消息
             builder.add(config.getBot(),"CloudOJ竞赛推送", new PlainText(message.getSuffixContestRankingUp()
                     .replace("%date%",today)));
@@ -197,10 +196,12 @@ public class ContestRank {
                        .replace("%contestName%", contestName)
                        .replace("%inviteKey%", contestData.getInviteKey())));
             }
+
             // 发送消息
             group.sendMessage(builder.build());
         }
-
+        // 清空排行榜更新信息列表
+        rankers.clear();
     }
 
 

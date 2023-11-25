@@ -159,13 +159,12 @@ public class ContestsParse {
                 return true;
             }
 
-            long startTimeAt = nowTime + config.getCheckContestRankTime();
+            long startTimeAt = nowTime + 1;
 
             // 如果当前时间在比赛进行中，将提醒时间添加到 updateContests 中
             if (nowTime > startAt && nowTime < endAt){
                 updateContestsAdd(startTimeAt,contestData);
                 updateContestsAdd(endTimeAt,contestData);
-                updateContestsAdd(startAt,contestData);
                 updateContestsAdd(endAt,contestData);
                 return true;
             }
