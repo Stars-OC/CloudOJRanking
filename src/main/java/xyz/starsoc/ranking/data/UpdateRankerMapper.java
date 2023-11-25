@@ -209,9 +209,11 @@ public class UpdateRankerMapper {
         }
 
         //正常发送符合需要的人
-        String msg = "";
-        for(UpdateRanker updateRanker : updateRankers){
+        ForwardMessageBuilder builder = new ForwardMessageBuilder(groupList.get(0));
 
+
+        for(UpdateRanker updateRanker : updateRankers){
+            String msg = "";
             //积累上榜人员
             updateRankingUp(updateRanker);
 
@@ -250,16 +252,14 @@ public class UpdateRankerMapper {
                 msg += text.replace("%name%",name) + "\n";
             }
 
+            builder.add(config.getBot(),"CloudOJ推送", new PlainText(msg));
         }
+
         updateRankers.clear();
 
+        builder.add(config.getBot(),"CloudOJ推送", new PlainText(message.getSuffix()));
+
         for(Group group : groupList){
-
-            ForwardMessageBuilder builder = new ForwardMessageBuilder(group);
-
-            builder.add(config.getBot(),"CloudOJ推送", new PlainText(msg));
-
-            builder.add(config.getBot(),"CloudOJ推送", new PlainText(message.getSuffix()));
             group.sendMessage(builder.build());
         }
 

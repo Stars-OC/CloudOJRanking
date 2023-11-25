@@ -93,6 +93,7 @@ public class RankingParse {
             //筛选新人对于其限制
             oldRanker.setRank(data.getCount());
             oldRanker.setScore(0.0);
+            oldRanker.setPassed(0);
         }
 
         double rankerScore = ranker.getScore();
