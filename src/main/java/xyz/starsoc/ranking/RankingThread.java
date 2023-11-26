@@ -138,7 +138,7 @@ public class RankingThread {
     public void makeEvent(long dateTime, @NotNull ContestData contestData){
 
         //TODO将这个生命周期进行完善
-        if (contestData.getEnded() && contestData.getInit()){
+        if (dateTime == contestData.getEndAt()/60){
             // 如果竞赛已经结束，则发送消息通知相关操作
 
             contestsParse.sendDownMessage(contestData);
