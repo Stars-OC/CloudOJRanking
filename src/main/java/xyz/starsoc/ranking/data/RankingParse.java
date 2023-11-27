@@ -110,6 +110,10 @@ public class RankingParse {
         //将数据进行判断，然后加入相对应的队列中
         UpdateRanker updateRanker = null;
         if(rankerRank <= config.getMonitorLimit() || score >= config.getScoreLimit() || rank >= config.getRankLimit() || passed >= config.getPassedLimit()){
+            // 抖动限制 -> 防止管理员的变动导致各种播报
+            if (score == 0 && passed == 0){
+                return;
+            }
             //用来减少对象的创建，减轻GC的负担
             updateRanker = new UpdateRanker(userId);
         }else {
